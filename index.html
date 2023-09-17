@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="./styles.css">
+	<title>Yoxie Forums</title>
+</head>
+
+<body>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			fetch('/threads') // Fetch data from the new endpoint
+				.then(response => response.json())
+				.then(threads => {
+					// Loop and create forum cards
+					for (let thread of threads) {
+						var html = `
+	                        <div class="forum-card">
+	                            <div class="card-info">
+	                                <span class="forum-title">
+	                                    <a href="/thread?id=${thread.id}" class="thread-link">${thread.title}</a>
+	                                </span>
+	                                <span class="forum-author">${thread.author}</span>
+	                            </div>
+	                            <div class="forum-preview">
+	                                ${thread.content}
+	                            </div>
+	                        </div>
+	                    `;
+						document.querySelector('ol').insertAdjacentHTML('beforeend', html);
+					}
+				})
+				.catch(error => {
+					console.error(error);
+					// Handle error if data retrieval fails
+				});
+		});
+	</script>
+
+	<div class="nav">
+		<a href="/">Home</a>
+		<a href="account">Account</a>
+		<a href="create">Create a post</a>
+	</div>
+	<div class="container">
+		<div class="wrapper">
+			<h1>Welcome to yoxie forums</h1>
+
+			<div class="cards-container">
+				<p style="font-size: x-large;">Latest posts</p>
+				<div class="forum-card">
+					<div class="card-info">
+						<span class="forum-title">
+							🥳 Welcome to the Forum!!🎉
+
+						</span>
+						<span style="color: red" class="forum-author">Yoxie</span>
+					</div>
+					<div class="forum-preview">
+						This is a post by me, Yoxie, just to introduce you to everything here,
+						note this is a work in progress
+						so I still need to work on stuff, have fun!
+					</div>
+				</div>
+				<ol></ol>
+			</div>
+		</div>
+	</div>
+	<script type="module">
+		// Import the functions you need from the SDKs you need
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
+		import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-analytics.js";
+		// TODO: Add SDKs for Firebase products that you want to use
+		// https://firebase.google.com/docs/web/setup#available-libraries
+
+		// Your web app's Firebase configuration
+		// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+		const firebaseConfig = {
+			apiKey: "AIzaSyBpJg46siyYqqBogtXdefVkzAUfiolkokE",
+			authDomain: "html-form-a0094.firebaseapp.com",
+			projectId: "html-form-a0094",
+			storageBucket: "html-form-a0094.appspot.com",
+			messagingSenderId: "902569903618",
+			appId: "1:902569903618:web:892be330ffe1bdc234891b",
+			measurementId: "G-0QGW834QPG"
+		};
+
+		// Initialize Firebase
+		const app = initializeApp(firebaseConfig);
+		const analytics = getAnalytics(app);
+	</script>
+</body>
+
+</html>
