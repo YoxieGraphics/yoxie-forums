@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="/create.js"></script>
+	<link rel="stylesheet" href="./styles.css">
+	<title>Yoxie Forums</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+	<script>
+		function showPassword() {
+			var x = document.getElementById("password");
+			var y = document.getElementById("passwordConfirm");
+			if (x.type === "password") {
+				x.type = "text";
+				y.type = "text";
+			} else {
+				x.type = "password";
+				y.type = "password";
+			}
+
+		}
+	</script>
+</head>
+
+<body>
+	<div class="nav">
+		<a href="/">Home</a>
+		<a href="/account">Account</a>
+		<a href="/create">Create a post</a>
+	</div>
+	<div class="container">
+		<div class="wrapper">
+			<h1>Sign in</h1>
+			<form class="loginForm">
+				<div class="loginInput">
+					<input id="email" type="email" placeholder="Email">
+				</div>
+				<div class="loginInput">
+					<input id="password" type="password" placeholder="Password" />
+					<i class="far fa-eye" onclick="showPassword()"
+						style="float:right; margin-top: 3px; z-index: 9999; cursor: pointer;"></i>
+				</div>
+				<button type='button' onclick="{
+					const email = document.getElementById('email').value;
+					const password = document.getElementById('password').value;
+					attemptLogin(email, password)}">Sign in!</button>
+				<p id="createResponse" style="display: none;">Account Created!</p>
+			</form>
+			<h3 style="text-align: center;margin-top: 20px;">Dont have an account? <a href="signup">Sign
+					up</a></h3>
+		</div>
+	</div>
+	</div>
+</body>
+
+</html>

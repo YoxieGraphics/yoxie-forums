@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+	<div class="nav">
+		<a href="/">Home</a>
+		<a href="/account">Account</a>
+		<a href="/create">Create a post</a>
+		<script>
+			function logout() {
+				fetch('/logout', {
+					method: 'POST',
+				})
+					.then(response => response.json())
+					.then(data => {
+						// Redirect to the login or home page after logout
+						window.location.href = '/login'; // You can change this URL to the desired logout destination
+					})
+					.catch(error => {
+						console.error(error);
+						// Handle error if logout fails
+					});
+			}
+			function deletePost(elem, id, userID) {
+				var parentElement = elem.parentElement.parentElement.parentElement; // Get the grandparent element
+				parentElement.style.display = 'none';
+				fetch(`/deletePost/${id}`);
+			}
+
+			document.addEventListener('DOMContentLoaded', function () {
+				fetch('/accountData')
+					.then(response => response.json())
+					.then(response => {
+						if (response.message == 'Account not found') {
+							document.getElementById('welcomeMessage').innerHTML = '404, Account not found';
+							document.getElementById('posts').style.display = 'none';
+							document.getElementById('notice').style.display = 'none';
+						}
+						console.log(response);
+						const account = response[0]
+						const posts = response[1]
+						console.log(account, posts)
+						// Set thread details
+						document.getElementById('welcomeMessage').innerHTML = `Welcome, ${account.username}`;
+						document.getElementById('email').innerHTML = `<a href="mailto:${account.email}">${account.email}</a>`;
+						document.getElementById('creationDate').innerHTML = `Your account was created on ${account.date}`;
+						if (!account.admin) {
+							document.getElementById('accountStatus').innerHTML = `Currently, you are not admin`;
+						} else {
+							document.getElementById('accountStatus').innerHTML = `Either this is broken or you're somehow admin`;
+						}
+						document.getElementById('createdPostsNum').innerHTML = `You have posted ${account.createdPosts} times`;
+						for (let post of posts) {
+							var html = `
+			                        <div class="forum-card">
+			                            <div class="card-info">
+			                                <span class="forum-title">
+			                                    <a href="/thread?id=${post.id}" class="thread-link">${post.title}</a>
+			                                </span>
+			                                <span class="forum-author"><a onclick="deletePost(this,${post.id},${account.id})" href="#">Delete post</span>
+			                            </div>
+			                            <div class="forum-preview">
+			                                ${post.content}
+			                            </div>
+			                        </div>
+			                    `;
+							document.querySelector('ol').insertAdjacentHTML('beforeend', html);
+						}
+					})
+					.catch(error => {
+						console.error(error);
+						// Handle error if data retrieval fails
+					});
+
+			});
+
+		</script>
+		<title id="pageName"></title>
+	</div>
+
+	<div class="container">
+		<div class="wrapper">
+			<h1 id="welcomeMessage"></h1>
+			<p id="email"></p>
+			<p id="creationDate"></p>
+			<p id="accountStatus"></p>
+			<p id="createdPostsNum"></p>
+			<p id="notice">Account settings are still being implemented</p>
+			<p class="logout" id="logout"><button onclick="logout()">Logout</button></p>
+			<div id="posts" class="cards-container">
+				<p style="font-size: x-large;">Your Posts</p>
+
+				<ol></ol>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

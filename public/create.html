@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="/create.js"></script>
+	<link rel="stylesheet" href="./styles.css">
+	<title>Yoxie Forums</title>
+</head>
+
+<body>
+	<div class="nav">
+		<a href="/">Home</a>
+		<a href="/account">Account</a>
+		<a href="/create">Create a post</a>
+	</div>
+	<div class="container">
+		<div class="wrapper">
+			<h1>Create a post</h1>
+			<form class="postForm">
+				<div class="loginInput">
+					<input id="postName" placeholder="What will the post be called?">
+				</div>
+				<textarea placeholder="What do you want to talk about?" name="postContent"
+					id="postContent" rows="20" cols="70" tabindex="2"></textarea>
+				<button type='button' onclick="createPost()">Create!</button>
+				<p id="confirmation" style="display: none;">Post created! It better be good</p>
+			</form>
+		</div>
+	</div>
+	</div>
+</body>
+
+</html>

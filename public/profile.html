@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="./styles.css">
+	<script>
+
+		function getUsernameFromURL() {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get('username');
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			fetch(`/profile/${getUsernameFromURL()}`)
+				.then(response => response.json())
+				.then(response => {
+					if (response.message == 'Account not found') {
+						document.getElementById('welcomeMessage').innerHTML = '404, Account not found';
+						document.getElementById('posts').style.display = 'none';
+						document.getElementById('notice').style.display = 'none';
+					}
+					console.log(response);
+					const account = response[0]
+					const posts = response[1]
+					console.log(account, posts)
+					// Set thread details
+					document.getElementById('welcomeMessage').innerHTML = account.username;
+					document.getElementById('pageName').innerText = account.username;
+					document.getElementById('creationDate').innerHTML = `Created on ${account.date}`;
+					if (account.admin) {
+						document.getElementById('accountStatus').innerHTML = `Admin`;
+					}
+					document.getElementById('createdPostsNum').innerHTML = `${account.createdPosts} posts`;
+					for (let post of posts) {
+						var html = `
+		                        <div class="forum-card">
+		                            <div class="card-info">
+		                                <span class="forum-title">
+		                                    <a href="/thread?id=${post.id}" class="thread-link">${post.title}</a>
+		                                </span>
+		                            </div>
+		                            <div class="forum-preview">
+		                                ${post.content}
+		                            </div>
+		                        </div>
+		                    `;
+						document.querySelector('ol').insertAdjacentHTML('beforeend', html);
+					}
+				})
+				.catch(error => {
+					console.error(error);
+					// Handle error if data retrieval fails
+				});
+
+		});
+
+	</script>
+	<title id="pageName">
+	</title>
+</head>
+
+<body>
+	<div class="nav">
+		<a href="/">Home</a>
+		<a href="/account">Account</a>
+		<a href="/create">Create a post</a>
+	</div>
+
+	<div class="container">
+		<div class="wrapper">
+			<h1 id="welcomeMessage"></h1>
+			<p id="email"></p>
+			<p id="creationDate"></p>
+			<p style="color: red;" id="accountStatus"></p>
+			<p id="createdPostsNum"></p>
+			<div id="posts" class="cards-container">
+				<p style="font-size: x-large;">Posts</p>
+
+				<ol></ol>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

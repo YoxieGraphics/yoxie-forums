@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="/create.js"></script>
+	<link rel="stylesheet" href="./styles.css">
+	<title>Yoxie Forums</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+	<script>
+		function showPassword() {
+			var x = document.getElementById("password");
+			var y = document.getElementById("passwordConfirm");
+			if (x.type === "password") {
+				x.type = "text";
+				y.type = "text";
+			} else {
+				x.type = "password";
+				y.type = "password";
+			}
+
+		}
+	</script>
+</head>
+
+<body>
+	<div class="nav">
+		<a href="/">Home</a>
+		<a href="/account">Account</a>
+		<a href="/create">Create a post</a>
+	</div>
+	<div class="container">
+		<div class="wrapper">
+			<h1>Sign up</h1>
+			<form class="loginForm">
+				<div class="loginInput">
+					<input id="username" placeholder="Set a username">
+				</div>
+				<div class="loginInput">
+					<input id="email" type="email" placeholder="Set an email">
+				</div>
+				<div class="loginInput">
+					<input id="password" type="password" placeholder="Enter a password" />
+					<i class="far fa-eye" onclick="showPassword()"
+						style="float:right; margin-top: 3px; z-index: 9999; cursor: pointer;"></i>
+				</div>
+
+				<div class="loginInput">
+					<input id="passwordConfirm" type="password" placeholder="Confirm Password">
+				</div>
+				<button type='button' onclick="{
+					const username = document.getElementById('username').value;
+					const email = document.getElementById('email').value;
+					const password = document.getElementById('password').value;
+					const passwordConfirm = document.getElementById('passwordConfirm').value;
+					createAccount(username, email, password, passwordConfirm)}">Sign Up!</button>
+				<p id="createResponse" style="display: none;">Account Created!</p>
+			</form>
+			<h3 style="text-align: center;margin-top: 20px;">Already have an account? <a href="login">Sign
+					in</a></h3>
+		</div>
+	</div>
+	</div>
+</body>
+
+</html>

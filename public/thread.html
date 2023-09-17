@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="./styles.css">
+	<title>Thread Page</title>
+	<script src="/create.js"></script>
+	<script>
+		const threadIdGenerator = () => {
+			const timestamp = Date.now();
+			const random = Math.random();
+			const idToReturn = timestamp - random;
+			return `${Math.round(idToReturn)}`;
+		};
+		function deleteComment(commentId, threadId, accountID) {
+			console.log('Deleting Comment')
+			console.log(`Comment ID: ${commentId},\nThread ID: ${threadId},\nAccount ID: ${accountID}`)
+			fetch(`/deleteComment/${commentId}/${threadId}`, {
+				method: 'DELETE' // Specify the HTTP method as DELETE
+			})
+				.then(response => {
+					response.json();
+					console.log(response.messages);
+				})
+				.then(data => {
+					console.log(data);
+				});
+
+
+		}
+		function createComment() {
+			const postContent = document.getElementById('postContent').value;
+			const threadId = getThreadIdFromURL();
+
+			// Use strict equality (===) to check for undefined
+			const commentData = {
+				content: postContent,
+				comments: [],
+				id: threadIdGenerator,
+				likes: 0
+			};
+			console.log('Date: ', timeCreated.toLocaleDateString())
+			console.log('Sending comment...');
+			fetch('/newComment', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ ...commentData, id: threadId }) // Spread commentData object and include the 'id' property
+			})
+				.then(response => {
+					response.json();
+					console.log(response);
+				})
+				.then(data => {
+					console.log(data); // Log the response data for reference
+					document.getElementById('confirmation').style.display = 'block'; // Use dot notation to access the style property
+				})
+				.catch(error => {
+					console.error('Error:', error);
+				});
+			console.log('Comment Sent!');
+
+			document.getElementById('confirmation').style.display = 'block'; // Use dot notation to access the style property
+		}
+
+		// Function to extract the 'id' parameter from the query string
+		function getThreadIdFromURL() {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get('id');
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const threadId = getThreadIdFromURL();
+
+			fetch(`/thread/${threadId}`) // Fetch data for the specific thread by its ID
+				.then(response => response.json())
+				.then(thread => {
+					// Set thread details
+					let deleteDisplay = 'none';
+					console.log(thread.comments);
+					document.getElementById('threadTitle').textContent = thread.title;
+					document.getElementById('threadAuthor').innerHTML = `Created by <a href="/profile?username=${thread.author}">${thread.author}</a> at ${thread.date}`;
+					document.getElementById('threadContent').textContent = thread.content;
+
+					fetch(`/accountData`)
+						.then(response => response.json())
+						.then(response => {
+							account = response[0]
+							const comments = thread.comments;
+							// Loop and create forum cards for comments
+							for (let comment of comments) {
+								if (account.admin || account.username == comment.author) {
+									deleteDisplay = 'inline-block';
+								}
+								var html = `
+	                            <div class="forum-card">
+	                                <div class="card-info">
+	                                    <span style="color:white;" class="forum-title">
+	                                        ${comment.author} <span id="deletePostId" style="display: ${deleteDisplay}; font-size:small;" onclick="deleteComment(${comment.id}, ${threadId}, ${account.id})" href="#">Delete Post</span>
+	                                    </span>
+	                                </div>
+	                                <div class="forum-preview">
+	                                    ${comment.content}
+	                                </div>
+	                            </div>
+	                        `;
+
+								document.querySelector('.cards-container').insertAdjacentHTML('beforeend', html);
+								console.log(thread);
+							}
+						})
+
+
+				})
+				.catch(error => {
+					console.error(error);
+					// Handle error if data retrieval fails
+				});
+
+		});
+	</script>
+	<style>
+		.addComment button {
+			margin-top: 10px;
+			text-align: center;
+			padding: 10px;
+			border-radius: 5px;
+			background-color: #ffffff;
+			padding-left: 25px;
+			padding-right: 25px;
+		}
+	</style>
+</head>
+
+<body>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const threadId = getThreadIdFromURL();
+			fetch(`/thread?id=${threadId}`)
+				.then(response => response.json())
+				.then(thread => {
+					// Set thread details
+					document.getElementById('threadTitle').textContent = thread.title;
+					document.getElementById('threadContent').textContent = thread.content;
+
+					const comments = thread.comments;
+					console.log('Hey!: ', comments);
+					// Loop and create forum cards for comments
+					for (let comment of comments) {
+						console.log('Hey!: ', comment);
+						var html = `
+	                        <div class="forum-card">
+	                            <div class="card-info">
+	                                <span style="color:white;" class="forum-title">
+	                                By ${comment.author}
+	                                </span>
+					<span style="color:white; float:right;" class="forum-date">
+	                                        Date: ${comment.date}
+	                                </span>
+	                            </div>
+	                            <div class="forum-preview">
+	                                ${comment.content}
+	                            </div>
+	                        </div>
+	                    `;
+						console.log(document.querySelector('.cards-container'));
+						document.querySelector('.cards-container').insertAdjacentHTML('beforeend', html);
+					}
+				})
+				.catch(error => {
+					console.error(error);
+					// Handle error if data retrieval fails
+				});
+
+		});
+
+
+		// Rest of your JavaScript code for creating comments
+	</script>
+	<header>
+		<!-- Your header content here -->
+	</header>
+
+	<div class="nav">
+		<a href="/">Home</a>
+		<a href="/account">Account</a>
+		<a href="/create">Create a post</a>
+	</div>
+
+	<div class="container">
+		<div class="wrapper">
+			<div class="threadWrapper">
+				<div class="threadContent">
+					<h2 id="threadTitle"></h2>
+					<p id="threadAuthor"></p>
+					<p id="threadContent"></p>
+				</div>
+			</div>
+			<div class="addComment">
+				<h1>Create a comment</h1>
+				<form id="commentForm" class="commentForm">
+					<textarea placeholder="What do you want to talk about?" name="postContent"
+						id="postContent" rows="10" cols="70" tabindex="2"></textarea>
+					<button type='button' onclick="
+			{
+				const postContent = document.getElementById('postContent').value;
+				const threadId = getThreadIdFromURL();
+
+				// Use strict equality (===) to check for undefined
+
+				const commentData = {
+					date: Date.now(),
+					content: postContent,
+					comments: []
+				};
+				console.log('Sending comment...');
+				fetch('/newComment', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ ...commentData, id: threadId }) // Spread commentData object and include the 'id' property
+				})
+					.then(response => {
+						response.json();
+						console.log(response);
+					})
+					.then(data => {
+						console.log(data); // Log the response data for reference
+						document.getElementById('confirmation').style.display = 'block'; // Use dot notation to access the style property
+					})
+					.catch(error => {
+						console.error('Error:', error);
+					});
+				console.log('Comment Sent!');
+
+				document.getElementById('confirmation').style.display = 'block'; // Use dot notation to access the style property
+
+			}" id="confirmComment">Comment!</button>
+					<p id="confirmation" style="display: none;">Post created! It better be
+						good</p>
+				</form>
+			</div>
+			<div class="cards-container"></div>
+		</div>
+
+
+		<!-- Comments will be populated here -->
+	</div>
+	</div>
+</body>
+
+</html>
